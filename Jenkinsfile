@@ -19,7 +19,7 @@ node {
    
   stage('Testing') {
     try {
-      bat "yarn test:unit"
+      bat "yarn test:coverage"
     } catch(err) {
       echo "${err}"
     }
