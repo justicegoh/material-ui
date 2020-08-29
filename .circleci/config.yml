@@ -52,9 +52,25 @@ commands:
             sudo apt-get install -y --force-yes gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
 
 jobs:
+  checkout:
+    <<: *defaults
+    steps:
+      - checkout
+      - install_js
+      - run:
+          name: Should not have any git not staged
+          command: git diff --exit-code
+      - run:
+          name: Check for duplicated packages
+          command: yarn deduplicate
+      - save_cache:
+          key: v2-yarn-sha-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn/v4
   test_unit:
     <<: *defaults
     steps:
+      - checkout
       - install_js
       - run:
           name: Tests fake browser
@@ -103,6 +119,7 @@ jobs:
   test_static:
     <<: *defaults
     steps:
+      - checkout
       - install_js
       - run:
           name: '`yarn prettier` changes committed?'
@@ -139,6 +156,7 @@ jobs:
   test_types:
     <<: *defaults
     steps:
+      - checkout
       - install_js
       - run:
           name: Transpile TypeScript demos
@@ -152,6 +170,7 @@ jobs:
   test_types_next:
     <<: *defaults
     steps:
+      - checkout
       - run:
           name: Resolve typescript version
           environment:
@@ -175,6 +194,7 @@ jobs:
   test_browser:
     <<: *defaults
     steps:
+      - checkout
       - install_js
       - prepare_chrome_headless
       - run:
@@ -194,10 +214,24 @@ workflows:
   version: 2
   pipeline:
     jobs:
-      - test_unit
-      - test_static
-      - test_types
-      - test_browser
+      - checkout:
+          filters:
+            branches:
+              ignore:
+                - l10n
+                - /dependabot\//
+      - test_unit:
+          requires:
+            - checkout
+      - test_static:
+          requires:
+            - checkout
+      - test_types:
+          requires:
+            - checkout
+      - test_browser:
+          requires:
+            - checkout
   react-next:
     triggers:
       - schedule:
