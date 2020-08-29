@@ -125,31 +125,17 @@ jobs:
           name: Generate PropTypes
           command: yarn proptypes
       - run:
-          name: '`yarn proptypes` changes committed?'
-          command: git diff --exit-code
-      - run:
           name: Generate the documentation
           command: yarn docs:api
       - run:
-          name: '`yarn docs:api` changes committed?'
-          command: git diff --exit-code
-      - run:
           name: Generate the framer components
           command: yarn workspace framer build
-      - run:
-          name: '`yarn workspace framer build` changes committed?'
-          command: git diff --exit-code
       - run:
           name: Lint
           command: yarn lint:ci
       - run:
           name: Lint JSON
           command: yarn jsonlint
-      - run:
-          name: '`yarn extract-error-codes` changes committed?'
-          command: |
-            yarn extract-error-codes
-            git diff --exit-code
   test_types:
     <<: *defaults
     steps:
@@ -158,9 +144,6 @@ jobs:
       - run:
           name: Transpile TypeScript demos
           command: yarn docs:typescript:formatted --disable-cache
-      - run:
-          name: '`yarn docs:typescript:formatted` changes committed?'
-          command: git add -A && git diff --exit-code --staged
       - run:
           name: Tests TypeScript definitions
           command: yarn typescript
