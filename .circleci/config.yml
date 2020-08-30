@@ -133,7 +133,7 @@ jobs:
               echo "no changes"
             fi
       - run:
-          name: Coverage
+          name: Coverage 
           command: bash <(curl -s https://codecov.io/bash) -Z -C $CIRCLE_SHA1
       - scanner
   test_static:
