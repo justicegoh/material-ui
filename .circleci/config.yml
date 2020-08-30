@@ -165,7 +165,7 @@ jobs:
       - checkout
       - install_js
       - run:
-          name: Transpile TypeScript demos
+          name: Transpile TypeScript demos 
           command: yarn docs:typescript:formatted --disable-cache
       - run:
           name: Tests TypeScript definitions
