@@ -72,6 +72,7 @@ commands:
       - run:
           name: "Install Sonarqube scanner"
           command: |
+            echo "run install-engine"
             wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-<< parameters.engine_version >>.zip
             unzip sonar-scanner-cli-<< parameters.engine_version >>.zip
   code-analysis:
@@ -199,6 +200,8 @@ jobs:
     steps:
       - checkout
       - install_js
+      - setup-environment
+      - install-engine
       - run:
           name: Check for duplicated packages
           command: yarn deduplicate
