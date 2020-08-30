@@ -53,155 +53,36 @@ commands:
           command: |
             sudo apt-get update
             sudo apt-get install -y --force-yes gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
-  setup-environment:
-    description: "Setup requirements"
-    steps:
-      - run:
-          name: "Setup environment"
-          command: |
-            sudo apk update
-            sudo apk add --no-cache zip openjdk11-jre-headless
-
-  install-engine:
-    description: "Install Sonarqube scanner"
+  scanner:
     parameters:
-      engine_version:
+      app:
         type: string
-        default: "4.2.0.1873"
+        description: "Github repo"
     steps:
-      - run:
-          name: "Install Sonarqube scanner"
-          command: |
-            echo "run install-engine"
-            wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-<< parameters.engine_version >>.zip
-            unzip sonar-scanner-cli-<< parameters.engine_version >>.zip
-  code-analysis:
-    description: "Run Sonarqube scanner for code analysis"
-    parameters:
-      organization:
-        type: string
-        default: "yfng96"
-      host_url:
-        type: string
-        default: "http://sonarcloud.io"
-      login:
-        type: string
-        default: "61e3ad26e9dcbb549871232ff5becff8fcfe5761"
-      projectKey:
-        type: string
-        default: "material-ui"
-      sources:
-        type: string
-        default: "./packages"
-      github_oauth:
-        type: string
-        default: "0c77c0bc022608bd24d278380d03e79c7784e91c"
-      github_repository:
-        type: string
-        default: "https://github.com/yfng96/material-ui"
-      runner_opts:
-        type: string
-        default: "-Xms1024m -Xmx4096m"
-      exclusions:
-        type: string
-        default: "**/test/*"
-      engine_version:
-        type: string
-        default: "4.2.0.1873"
-    steps:
-      - run:
-          name: "Code analysis"
-          command: |
-            export SONAR_RUNNER_OPTS="<< parameters.runner_opts >>"
-            eval ./sonar-scanner-<< parameters.engine_version >>/bin/sonar-scanner \
-              -Dsonar.host.url=<< parameters.host_url >> \
-              -Dsonar.login=<< parameters.login >> \
-              -Dsonar.projectKey=<< parameters.projectKey >> \
-              -Dsonar.organization=<< parameters.organization >> \
-              -Dsonar.sources=<< parameters.sources >> \
-              -Dsonar.github.oauth=<< parameters.github_oauth >> \
-              -Dsonar.github.repository=<< parameters.github_repository >> \
-              -Dsonar.exclusions="<< parameters.exclusions >>"
-  commit-analysis:
-    description: "Run Sonarqube scanner for commit analysis"
-    parameters:
-      organization:
-        type: string
-        default: "yfng96"
-      host_url:
-        type: string
-        default: "http://sonarcloud.io"
-      login:
-        type: string
-        default: "61e3ad26e9dcbb549871232ff5becff8fcfe5761"
-      projectKey:
-        type: string
-        default: "material-ui"
-      projectVersion:
-        type: string
-        default: "1.0.0"
-      sources:
-        type: string
-        default: "./packages"
-      github_oauth:
-        type: string
-        default: "0c77c0bc022608bd24d278380d03e79c7784e91c"
-      github_pullRequest:
-        type: string
-      github_repository:
-        type: string
-        default: "https://github.com/yfng96/material-ui"
-      github_disableInlineComments:
-        type: boolean
-        default: false
-      analysis_mode:
-        type: string
-        default: "preview"
-      issuesReport_console_enable:
-        type: boolean
-        default: true
-      runner_opts:
-        type: string
-        default: "-Xms1024m -Xmx4096m"
-      exclusions:
-        type: string
-        default: "**/test/*"
-      engine_version:
-        type: string
-        default: "4.2.0.1873"
-    steps:
-      - run:
-          name: "Commit analysis"
-          command: |
-            echo "<< parameters.github_pullRequest >>"
-            if [ ! -z "<< parameters.github_pullRequest >>" ]; then
-              export SONAR_RUNNER_OPTS="<< parameters.runner_opts >>"
-              eval ./sonar-scanner-<< parameters.engine_version >>/bin/sonar-scanner \
-                -Dsonar.organization=<< parameters.organization >> \
-                -Dsonar.host.url=<< parameters.host_url >> \
-                -Dsonar.login=<< parameters.login >> \
-                -Dsonar.projectKey=<< parameters.projectKey >> \
-                -Dsonar.projectVersion=<< parameters.projectVersion >> \
-                -Dsonar.issuesReport.console.enable=<< parameters.issuesReport_console_enable >> \
-                -Dsonar.organization=<< parameters.organization >> \
-                -Dsonar.sources=<< parameters.sources >> \
-                -Dsonar.analysis.mode=<< parameters.analysis_mode >> \
-                -Dsonar.github.pullRequest=<< parameters.github_pullRequest >> \
-                -Dsonar.github.disableInlineComments=<< parameters.github_disableInlineComments >> \
-                -Dsonar.github.oauth=<< parameters.github_oauth >> \
-                -Dsonar.github.repository==<< parameters.github_repository >> \
-                -Dsonar.exclusions="=<< parameters.exclusions >>"
-            else
-              echo "Check skipped..."
-            fi
+    - run:
+        name: Install Sonarqube scanner
+        command: |
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227-linux.zip
+          unzip sonar-scanner-cli-3.2.0.1227-linux.zip
+    - run:
+        name: Run Sonarqube scanner
+        command: |
+          echo "enter scanner"
+          export SONAR_SCANNER_OPTS="-Xmx2048m"
+          eval ./sonar-scanner-3.2.0.1227-linux/bin/sonar-scanner -Dsonar.projectKey=material-ui \
+          -Dsonar.sources=packages \
+          -Dsonar.organization=yfng96 \
+          -Dsonar.sourceEncoding=UTF-8 \
+          -Dsonar.exclusions=**/test/* \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.projectVersion=1.0.0 \
+          -Dsonar.login=61e3ad26e9dcbb549871232ff5becff8fcfe5761
 jobs:
   checkout:
     <<: *defaults
     steps:
       - checkout
       - install_js
-      - setup-environment
-      - install-engine
       - run:
           name: Check for duplicated packages
           command: yarn deduplicate
@@ -258,6 +139,7 @@ jobs:
       - run:
           name: Coverage
           command: bash <(curl -s https://codecov.io/bash) -Z -C $CIRCLE_SHA1
+      - scanner
   test_static:
     <<: *defaults
     steps:
