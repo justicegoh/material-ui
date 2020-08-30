@@ -44,7 +44,9 @@ commands:
             - v2-yarn-sha-
       - run:
           name: Install js dependencies
-          command: yarn
+          command: |
+            yarn
+            yarn add -D -W mocha-sonarqube-reporter
   prepare_chrome_headless:
     steps:
       - run:
