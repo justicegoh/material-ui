@@ -59,8 +59,8 @@ commands:
       - run:
           name: "Setup environment"
           command: |
-            apk update
-            apk add --no-cache zip openjdk11-jre-headless
+            sudo apk update
+            sudo apk add --no-cache zip openjdk11-jre-headless
 
   install-engine:
     description: "Install Sonarqube scanner"
